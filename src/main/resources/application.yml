@@ -1,0 +1,42 @@
+spring:
+  profiles:
+    active: dev
+  datasource:
+    hikari:
+      connection-test-query: select 'x'
+      auto-commit: false
+      connection-timeout: 5000
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate.search.default.directory_provider: filesystem
+      hibernate.search.default.indexBase: /data/index/default
+      hibernate.search.analyzer: org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+token:
+  time-out: 7 # day
+
+api:
+  time-out: 10 # second
+wx:
+  miniAppId: wx4cae1608bb06946b
+  miniSecret: cad5d0a36304a2e2d23fc5b6763bebdc
+
+# 七牛云SDK配置
+qiniu:
+  access-key:
+  secret-key:
+  bucket:
+  domain: # 格式: http://xxxxx.clouddn.com 结尾不带斜杠
+
+# 阿里云SDK配置
+aliyun:
+  access-key-id: LTAI8xoJhAV7yP2S
+  access-key-secret: FfA9S4UAh8qipH5O73XJBOCoRnfQQK
+  region-id: cn-shanghai
