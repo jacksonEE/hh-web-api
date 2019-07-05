@@ -1,7 +1,7 @@
 package com.ritz.web.serviceapi.frame.core;
 
 import com.ritz.web.serviceapi.frame.ex.ApiException;
-import com.ritz.web.serviceapi.frame.http.RequestModel;
+import com.ritz.web.serviceapi.frame.http.RequestAttr;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,15 +10,45 @@ import java.util.Map;
 public interface ApiHandler {
 
     /**
-     * @param requestModel 参数
-     * @param result       结果集
-     * @param request      request
-     * @param response     response
-     * @param userId       当前登录id
+     * @param ra     参数
+     * @param userId 当前登录id (user or manager?)
      * @throws ApiException ex
      */
-    void handle(RequestModel requestModel, final Map<String, Object> result, HttpServletRequest request,
-                HttpServletResponse response, Integer userId) throws ApiException;
+    void handle(RequestAttr ra, Integer userId) throws ApiException;
+
+    /**
+     * get request
+     *
+     * @return get current Thread request
+     */
+    HttpServletRequest getRequest();
+
+    /**
+     * get response
+     *
+     * @return current Thread response
+     */
+    HttpServletResponse getResponse();
+
+    /**
+     * init result map
+     */
+    void initial(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * get res
+     *
+     * @return result map
+     */
+    Map<String, Object> getResultMap();
+
+    /**
+     * add k-v to result map
+     *
+     * @param key   键
+     * @param value 值
+     */
+    void addResult(String key, Object value);
 
 
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter
 @ToString
 @NoArgsConstructor
-public class RequestModel implements Serializable {
+public class RequestAttr implements Serializable {
 
     // 服务名
     private String api;
@@ -24,7 +24,7 @@ public class RequestModel implements Serializable {
     /**
      * constructor
      */
-    public RequestModel(String api) {
+    public RequestAttr(String api) {
         this.params = new HashMap<>();
         this.api = api;
     }

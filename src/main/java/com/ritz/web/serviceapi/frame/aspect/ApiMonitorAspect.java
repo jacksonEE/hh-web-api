@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ApiMonitorAspect {
 
-    @Pointcut("execution(public * com.zj.match.score.api..*.handle(..))")
+    @Pointcut(value = "execution(public * com.ritz.web.serviceapi.api..*.handle(..))")
     public void apiMonitorPointcut() {
     }
 

@@ -12,9 +12,18 @@ import java.util.Date;
 @NoArgsConstructor
 class Token implements Serializable {
 
+    /**
+     * 登录id
+     */
     private Integer userId;
 
+    /**
+     * @see  UserType
+     */
     private UserType userType;
 
+    /**
+     * token 的生成时间
+     */
     private Date loginTime;
 }

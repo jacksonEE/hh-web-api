@@ -1,7 +1,7 @@
 package com.ritz.web.serviceapi;
 
 import com.ritz.web.serviceapi.frame.core.ApiEngine;
-import com.ritz.web.serviceapi.frame.http.RequestModel;
+import com.ritz.web.serviceapi.frame.http.RequestAttr;
 import com.ritz.web.serviceapi.frame.http.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +31,12 @@ public class ServiceApiApplication implements ApplicationListener<ApplicationRea
     private ApiEngine apiEngine;
 
     @PostMapping("api")
-    public Response api(@RequestBody RequestModel requestModel, HttpServletRequest request, HttpServletResponse response) {
+    public Response api(@RequestBody RequestAttr requestModel, HttpServletRequest request, HttpServletResponse response) {
         return apiEngine.handle(requestModel, request, response);
     }
 
     @PostMapping("api_batch")
-    public Response apiBatch(@RequestBody List<RequestModel> requestModels,
+    public Response apiBatch(@RequestBody List<RequestAttr> requestModels,
                              HttpServletRequest request, HttpServletResponse response) {
         return apiEngine.handleBatch(requestModels, request, response);
     }

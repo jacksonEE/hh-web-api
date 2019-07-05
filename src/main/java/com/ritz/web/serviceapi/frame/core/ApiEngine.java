@@ -3,7 +3,7 @@ package com.ritz.web.serviceapi.frame.core;
 import com.ritz.web.serviceapi.frame.annotation.Api;
 import com.ritz.web.serviceapi.frame.ex.ApiException;
 import com.ritz.web.serviceapi.frame.http.ApiStatus;
-import com.ritz.web.serviceapi.frame.http.RequestModel;
+import com.ritz.web.serviceapi.frame.http.RequestAttr;
 import com.ritz.web.serviceapi.frame.http.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +36,8 @@ public class ApiEngine {
     private Integer timeOut;
     @Value("${api.time-out:10}")
     private Integer apiTimeOut;
+
+    private static final String AUTHORIZATION = "Authorization";
 
     public ApiEngine() {
     }
@@ -71,9 +73,9 @@ public class ApiEngine {
      * @param request api request
      * @return response
      */
-    public Response handle(RequestModel request, HttpServletRequest servletRequest, HttpServletResponse response) {
-        log.info("请求参数:{}", request);
-        String apiName = request.getApi();
+    public Response handle(RequestAttr ra, HttpServletRequest request, HttpServletResponse response) {
+        log.info("请求参数:{}", ra);
+        String apiName = ra.getApi();
         if (StringUtils.isBlank(apiName)) {
             log.warn("api is blank");
             return Response.failure(ApiStatus.API_NOT_FOUND);
@@ -86,17 +88,17 @@ public class ApiEngine {
         }
 
         try {
-            String tokenId = servletRequest.getHeader("Authorization");
+            String tokenId = request.getHeader(AUTHORIZATION);
             Api api = handler.getClass().getAnnotation(Api.class);
             Integer userId = 0;
             if (api.needLogin()) {
                 log.info("请求token:" + tokenId);
                 if (StringUtils.isBlank(tokenId)) {
-                    throw new ApiException(ApiStatus.NOT_LOGIN);
+                    throw new ApiException(ApiStatus.NO_LOGIN);
                 }
                 Token t = accessTokenService.find(tokenId);
                 if (t == null) {
-                    throw new ApiException(ApiStatus.NOT_LOGIN);
+                    throw new ApiException(ApiStatus.NO_LOGIN);
                 }
                 long time = System.currentTimeMillis() - t.getLoginTime().getTime();
                 if (time > timeOut * 3600 * 1000 * 24) {
@@ -111,9 +113,9 @@ public class ApiEngine {
                 userId = t.getUserId();
                 log.info("当前请求用户:{},类型:{}", userId, t.getUserType().name());
             }
-            final Map<String, Object> result = new HashMap<>();
-            handler.handle(request, result, servletRequest, response, userId);
-            return Response.success(result);
+            handler.initial(request, response);
+            handler.handle(ra, userId);
+            return Response.success(handler.getResultMap());
         } catch (ApiException ex) {
             return Response.failure(ex.getCode(), ex.getMessage(), ex.getExtendMsg());
         } catch (Exception ex) {
@@ -129,21 +131,21 @@ public class ApiEngine {
     /**
      * handle batch api request
      *
-     * @param requestModels models
-     * @param request       request
-     * @param response      response
+     * @param ras      ras
+     * @param request  request
+     * @param response response
      * @return responses
      */
     public Response handleBatch(
-            List<RequestModel> requestModels, HttpServletRequest request, HttpServletResponse response) {
+            List<RequestAttr> ras, HttpServletRequest request, HttpServletResponse response) {
         log.info("=====执行batch请求=====");
         long start = System.currentTimeMillis();
         final Map<String, Object> result = new HashMap<>();
-        if (requestModels != null && !requestModels.isEmpty()) {
+        if (ras != null && !ras.isEmpty()) {
             List<CompletableFuture> completableFutures = new ArrayList<>();
-            requestModels.forEach(requestModel -> completableFutures.add(
-                    CompletableFuture.supplyAsync(() -> handle(requestModel, request, response))
-                            .thenAcceptAsync(r -> result.put(requestModel.getApi(), r))
+            ras.forEach(ra -> completableFutures.add(
+                    CompletableFuture.supplyAsync(() -> handle(ra, request, response))
+                            .thenAcceptAsync(r -> result.put(ra.getApi(), r))
             ));
             try {
                 CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]))
@@ -155,5 +157,4 @@ public class ApiEngine {
         log.info("=====完成batch请求,耗时:{}ms=====", System.currentTimeMillis() - start);
         return Response.success(result);
     }
-
 }

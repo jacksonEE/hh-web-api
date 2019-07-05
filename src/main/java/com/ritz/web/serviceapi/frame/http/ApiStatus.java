@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum ApiStatus {
 
     OK(0, "请求成功"),
-    NOT_LOGIN(-1, "请先登录"),
+    NO_LOGIN(-1, "请先登录"),
     TOKEN_EXPIRED(-2, "请重新登录"),
     USERNAME_NOT_EXISTED(-3, "用户不存在"),
     PASSWORD_INCORRECT(-4, "密码错误"),

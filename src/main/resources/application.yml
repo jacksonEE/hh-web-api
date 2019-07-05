@@ -21,9 +21,9 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
 token:
   time-out: 7 # day
-
 api:
   time-out: 10 # second
+
 wx:
   miniAppId: wx4cae1608bb06946b
   miniSecret: cad5d0a36304a2e2d23fc5b6763bebdc
@@ -37,6 +37,6 @@ qiniu:
 
 # 阿里云SDK配置
 aliyun:
-  access-key-id: LTAI8xoJhAV7yP2S
-  access-key-secret: FfA9S4UAh8qipH5O73XJBOCoRnfQQK
-  region-id: cn-shanghai
+  access-key-id:
+  access-key-secret:
+  region-id:
