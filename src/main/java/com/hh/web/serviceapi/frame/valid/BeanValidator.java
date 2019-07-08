@@ -33,9 +33,7 @@ public final class BeanValidator {
         if (isCollection) {
             Collection c = (Collection) obj;
             if (!c.isEmpty()) {
-                Iterator iterator = c.iterator();
-                while (iterator.hasNext()) {
-                    Object next = iterator.next();
+                for (Object next : c) {
                     if (!isPrimitive(next)) {
                         valid(next);
                     }
@@ -51,7 +49,7 @@ public final class BeanValidator {
                     try {
                         value = field.get(obj);
                     } catch (IllegalAccessException e) {
-                        log.error("参数校验失败:{}", e);
+                        log.error("参数校验失败:{}", e.getMessage());
                         throw new ApiException(ApiStatus.FIELD_INVALID);
                     }
                     if (value instanceof Collection) {
