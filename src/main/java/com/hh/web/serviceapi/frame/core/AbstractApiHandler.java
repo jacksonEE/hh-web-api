@@ -24,7 +24,6 @@ public abstract class AbstractApiHandler implements ApiHandler {
         MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-
     protected <T> T trans(RequestAttr requestModel, Class<T> cls) {
         if (requestModel != null && requestModel.getParams() != null) {
             return MAPPER.convertValue(requestModel.getParams(), cls);
@@ -38,21 +37,26 @@ public abstract class AbstractApiHandler implements ApiHandler {
      * <p>
      * Person {
      *
-     * @param requestModel requestModel
+     * @param ra           RequestAttr
      * @param cls          target class
      * @param <T>          target type
      * @return T
      * @throws ApiException ex
-     *                      e.g.
-     *                      class Complex {
-     * @NotBlank String id; √
-     * School {
-     * @NotBlank String id; ×
-     * }
+     *
+     * e.g.
+     * class Complex {
+     *
+     *  @NotBlank
+     *  String a; √
+     *
+     *  School {
+     *    @NotBlank
+     *    String b; ×
+     *  }
      * }
      */
-    protected <T> T transAndSimpleValid(RequestAttr requestModel, Class<T> cls) throws ApiException {
-        T trans = trans(requestModel, cls);
+    protected <T> T transAndSimpleValid(RequestAttr ra, Class<T> cls) throws ApiException {
+        T trans = trans(ra, cls);
         if (trans != null) {
             BeanValidator.valid(trans);
         }
@@ -64,21 +68,26 @@ public abstract class AbstractApiHandler implements ApiHandler {
      * <p>
      * Person {
      *
-     * @param requestModel requestModel
+     * @param ra           RequestAttr
      * @param cls          target class
      * @param <T>          target type
      * @return T
      * @throws ApiException ex
-     *                      e.g.
-     *                      class Complex {
-     * @NotBlank String id; √
-     * School {
-     * @NotBlank String id; √
-     * }
+     *
+     * e.g.
+     * class Complex {
+     *
+     *   @NotBlank
+     *   String a; √
+     *
+     *   School {
+     *     @NotBlank
+     *     String b; √
+     *   }
      * }
      */
-    protected <T> T transAndComplexValid(RequestAttr requestModel, Class<T> cls) throws ApiException {
-        T trans = trans(requestModel, cls);
+    protected <T> T transAndComplexValid(RequestAttr ra, Class<T> cls) throws ApiException {
+        T trans = trans(ra, cls);
         if (trans != null) {
             BeanValidator.valid(trans, false);
         }

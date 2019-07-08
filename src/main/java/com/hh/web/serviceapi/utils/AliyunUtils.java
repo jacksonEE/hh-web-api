@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
-import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.green.model.v20180509.TextScanRequest;
 import com.aliyuncs.http.FormatType;
@@ -37,7 +36,7 @@ public class AliyunUtils {
      * @param content 要审核的文本
      * @return 审核结果 true:通过 false:不通过
      */
-    public boolean contentCensor(String content) {
+    public boolean contentCensor(String content) throws ServerException {
         IClientProfile profile = DefaultProfile.getProfile(aliyunProperties.getRegionId(),
                 aliyunProperties.getAccessKeyId(), aliyunProperties.getAccessKeySecret());
         IAcsClient client = new DefaultAcsClient(profile);
@@ -89,10 +88,6 @@ public class AliyunUtils {
             } else {
                 log.error("response not success. status:" + httpResponse.getStatus());
             }
-        } catch (ServerException e) {
-            log.error(e.getMessage(), e);
-        } catch (ClientException e) {
-            log.error(e.getMessage(), e);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

@@ -50,7 +50,7 @@ public class EncryptUtil {
             m.update(inputText.getBytes(StandardCharsets.UTF_8));
             byte[] s = m.digest();
             return hex(s);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -61,8 +61,8 @@ public class EncryptUtil {
      */
     private static String hex(byte[] arr) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < arr.length; ++i) {
-            sb.append(Integer.toHexString((arr[i] & 0xFF) | 0x100), 1, 3);
+        for (byte b : arr) {
+            sb.append(Integer.toHexString((b & 0xFF) | 0x100), 1, 3);
         }
         return sb.toString();
     }
