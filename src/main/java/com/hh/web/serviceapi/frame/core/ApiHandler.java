@@ -30,6 +30,9 @@ public interface ApiHandler {
      */
     HttpServletResponse getResponse();
 
+
+    Map<String,Object> getResultMap();
+
     /**
      * init result map
      */
