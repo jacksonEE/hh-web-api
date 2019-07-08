@@ -1,6 +1,6 @@
 package com.ritz.web.serviceapi.frame.aspect;
 
-import com.ritz.web.serviceapi.frame.annotation.Api;
+import com.ritz.web.serviceapi.frame.http.RequestAttr;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ApiMonitorAspect {
 
-    @Pointcut(value = "execution(public * com.ritz.web.serviceapi.api..*.handle(..))")
+    @Pointcut(value = "execution(public * com.ritz.web.serviceapi.frame.core.ApiEngine.handle(..))")
     public void apiMonitorPointcut() {
     }
 
@@ -27,8 +27,7 @@ public class ApiMonitorAspect {
 
     @Around(value = "apiMonitorPointcut()")
     public Object doAround(ProceedingJoinPoint jp) throws Throwable {
-        Class declaringType = jp.getSignature().getDeclaringType();
-        Api api = (Api) declaringType.getDeclaredAnnotation(Api.class);
+        RequestAttr ra = (RequestAttr) jp.getArgs()[0];
         long start = System.currentTimeMillis();
         Throwable[] err = new Throwable[1];
         Object o = CompletableFuture.supplyAsync(() -> {
@@ -38,11 +37,11 @@ public class ApiMonitorAspect {
                 return throwable;
             }
         }).whenCompleteAsync((r, e) -> {
-            if (r != null) {
-                err[0] = (Throwable) r;
-                log.error(((Throwable) r).getMessage());
+            if (e != null) {
+                err[0] = e;
+                log.error(e.getMessage());
             }
-            log.info("`{}`执行完成,耗时{}ms", api.value(),
+            log.info("`{}`执行完成,耗时{}ms", ra.getApi(),
                     System.currentTimeMillis() - start);
         }).get(timeOut, TimeUnit.SECONDS);
         if (err[0] != null) {

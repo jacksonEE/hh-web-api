@@ -36,7 +36,7 @@ public class ServiceApiApplication implements ApplicationListener<ApplicationRea
     }
 
     @PostMapping("api_batch")
-    public Response apiBatch(@RequestBody List<RequestAttr> requestModels,
+    public List<Response> apiBatch(@RequestBody List<RequestAttr> requestModels,
                              HttpServletRequest request, HttpServletResponse response) {
         return apiEngine.handleBatch(requestModels, request, response);
     }

@@ -136,16 +136,16 @@ public class ApiEngine {
      * @param response response
      * @return responses
      */
-    public Response handleBatch(
+    public List<Response> handleBatch(
             List<RequestAttr> ras, HttpServletRequest request, HttpServletResponse response) {
         log.info("=====执行batch请求=====");
         long start = System.currentTimeMillis();
-        final Map<String, Object> result = new HashMap<>();
+        final List<Response> results = new ArrayList<>();
         if (ras != null && !ras.isEmpty()) {
             List<CompletableFuture> completableFutures = new ArrayList<>();
             ras.forEach(ra -> completableFutures.add(
                     CompletableFuture.supplyAsync(() -> handle(ra, request, response))
-                            .thenAcceptAsync(r -> result.put(ra.getApi(), r))
+                            .thenAcceptAsync(results::add)
             ));
             try {
                 CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]))
@@ -155,6 +155,6 @@ public class ApiEngine {
             }
         }
         log.info("=====完成batch请求,耗时:{}ms=====", System.currentTimeMillis() - start);
-        return Response.success(result);
+        return results;
     }
 }

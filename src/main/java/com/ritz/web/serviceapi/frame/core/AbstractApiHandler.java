@@ -90,7 +90,6 @@ public abstract class AbstractApiHandler implements ApiHandler {
         RESULT_HOLDER.set(new HashMap<>());
         REQUEST_HOLDER.set(request);
         RESPONSE_HOLDER.set(response);
-        System.out.println(Thread.currentThread().getName());
     }
 
     @Override
@@ -110,8 +109,7 @@ public abstract class AbstractApiHandler implements ApiHandler {
 
     @Override
     public final void addResult(String key, Object value) {
-        Map<String, Object> stringObjectMap = RESULT_HOLDER.get();
-        System.out.println(stringObjectMap);
-        System.out.println(Thread.currentThread().getName());
+        Map<String, Object> map = RESULT_HOLDER.get();
+        map.put(key, value);
     }
 }
