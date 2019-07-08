@@ -112,11 +112,6 @@ public abstract class AbstractApiHandler implements ApiHandler {
     }
 
     @Override
-    public final Map<String, Object> getResultMap() {
-        return RESULT_HOLDER.get();
-    }
-
-    @Override
     public final void addResult(String key, Object value) {
         Map<String, Object> map = RESULT_HOLDER.get();
         map.put(key, value);

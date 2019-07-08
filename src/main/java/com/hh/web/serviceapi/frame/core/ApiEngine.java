@@ -39,9 +39,6 @@ public class ApiEngine {
 
     private static final String AUTHORIZATION = "Authorization";
 
-    public ApiEngine() {
-    }
-
     @PostConstruct
     private void init() throws RuntimeException {
         this.mapping = new HashMap<>();
@@ -88,31 +85,7 @@ public class ApiEngine {
         }
 
         try {
-            String tokenId = request.getHeader(AUTHORIZATION);
-            Api api = handler.getClass().getAnnotation(Api.class);
-            Integer userId = 0;
-            if (api.needLogin()) {
-                log.info("请求token:" + tokenId);
-                if (StringUtils.isBlank(tokenId)) {
-                    throw new ApiException(ApiStatus.NO_LOGIN);
-                }
-                Token t = accessTokenService.find(tokenId);
-                if (t == null) {
-                    throw new ApiException(ApiStatus.NO_LOGIN);
-                }
-                long time = System.currentTimeMillis() - t.getLoginTime().getTime();
-                if (time > timeOut * 3600 * 1000 * 24) {
-                    accessTokenService.remove(tokenId);
-                    throw new ApiException(ApiStatus.TOKEN_EXPIRED);
-                }
-                UserType userType = t.getUserType();
-                if ((api.isManager() && userType == UserType.USER) ||
-                        (!api.isManager() && userType == UserType.MANAGER)) {
-                    throw new ApiException(ApiStatus.FORBIDDEN);
-                }
-                userId = t.getUserId();
-                log.info("当前请求用户:{},类型:{}", userId, t.getUserType().name());
-            }
+            Integer userId = checkLogin(request, handler);
             handler.initial(request, response);
             handler.handle(ra, userId);
             return Response.success(handler.getResultMap());
@@ -155,5 +128,34 @@ public class ApiEngine {
         }
         log.info("=====完成batch请求,耗时:{}ms=====", System.currentTimeMillis() - start);
         return results;
+    }
+
+    private Integer checkLogin(HttpServletRequest request, ApiHandler handler) throws ApiException {
+        String tokenId = request.getHeader(AUTHORIZATION);
+        Api api = handler.getClass().getAnnotation(Api.class);
+        Integer userId = 0;
+        if (api.needLogin()) {
+            log.info("请求token:" + tokenId);
+            if (StringUtils.isBlank(tokenId)) {
+                throw new ApiException(ApiStatus.NO_LOGIN);
+            }
+            Token t = accessTokenService.find(tokenId);
+            if (t == null) {
+                throw new ApiException(ApiStatus.NO_LOGIN);
+            }
+            long time = System.currentTimeMillis() - t.getLoginTime().getTime();
+            if (time > timeOut * 3600 * 1000 * 24) {
+                accessTokenService.remove(tokenId);
+                throw new ApiException(ApiStatus.TOKEN_EXPIRED);
+            }
+            UserType userType = t.getUserType();
+            if ((api.isManager() && userType == UserType.USER) ||
+                    (!api.isManager() && userType == UserType.MANAGER)) {
+                throw new ApiException(ApiStatus.FORBIDDEN);
+            }
+            userId = t.getUserId();
+            log.info("当前请求用户:{},类型:{}", userId, t.getUserType().name());
+        }
+        return userId;
     }
 }

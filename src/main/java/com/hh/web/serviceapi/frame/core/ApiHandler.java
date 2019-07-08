@@ -36,19 +36,10 @@ public interface ApiHandler {
     void initial(HttpServletRequest request, HttpServletResponse response);
 
     /**
-     * get res
-     *
-     * @return result map
-     */
-    Map<String, Object> getResultMap();
-
-    /**
      * add k-v to result map
      *
      * @param key   键
      * @param value 值
      */
     void addResult(String key, Object value);
-
-
 }
