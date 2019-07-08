@@ -150,8 +150,7 @@ public class ApiEngine {
             try {
                 CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]))
                         .get(apiTimeOut, TimeUnit.SECONDS);
-            } catch (Exception e) {
-                // ignore
+            } catch (Exception ignore) {
             }
         }
         log.info("=====完成batch请求,耗时:{}ms=====", System.currentTimeMillis() - start);
