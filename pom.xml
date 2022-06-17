@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <dozer-core.version>6.4.1</dozer-core.version>
         <dozer-spring.version>6.4.1</dozer-spring.version>
-        <fastjson.version>1.2.57</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <weixin-java-miniapp.version>3.3.0</weixin-java-miniapp.version>
         <weixin-java-miniapp.version>3.3.0</weixin-java-miniapp.version>
         <qiniu-java-sdk.version>7.2.18</qiniu-java-sdk.version>
